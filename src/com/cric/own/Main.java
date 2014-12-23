@@ -45,15 +45,22 @@ public class Main extends Activity {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
 					Integer operation = getFeature(textBox.getText().toString());
-					if(operation == TEMPERATURE)
+					if(operation == TEMPERATURE){
+						new SparkCoreConnection().execute("temperature");
 						Toast.makeText(getApplicationContext(), "Retrieving temperature", Toast.LENGTH_LONG).show();
-					if(operation == LIGHT)
+					}
+					if(operation == LIGHT){
+						new SparkCoreConnection().execute("light");
 						Toast.makeText(getApplicationContext(), "Retrieving light level", Toast.LENGTH_LONG).show();
-					if(operation == HUMIDITY)
+					}
+					if(operation == HUMIDITY){
+						new SparkCoreConnection().execute("humidity");
 						Toast.makeText(getApplicationContext(), "Retrieving humidity level", Toast.LENGTH_LONG).show();
-					if(operation == CO2)
+					}
+					if(operation == CO2){
+						new SparkCoreConnection().execute("co2");
 						Toast.makeText(getApplicationContext(), "Retrieving CO2 level", Toast.LENGTH_LONG).show();
-					new SparkCoreConnection().execute(textBox.getText().toString());
+					}
 					Toast.makeText(getApplicationContext(), "Sending text to SparkCore", Toast.LENGTH_LONG).show();
 					return true;
 				}
@@ -91,21 +98,27 @@ public class Main extends Activity {
 				else{
 					
 					String speechLine = text.get(0).toString();
+					
 					textBox.setText(speechLine);
 					
 					Integer operation = getFeature(speechLine);
-					if(operation == TEMPERATURE)
+					if(operation == TEMPERATURE){
+						new SparkCoreConnection().execute("temperature");
 						Toast.makeText(getApplicationContext(), "Retrieving temperature", Toast.LENGTH_LONG).show();
-					if(operation == LIGHT)
+					}
+					if(operation == LIGHT){
+						new SparkCoreConnection().execute("light");
 						Toast.makeText(getApplicationContext(), "Retrieving light level", Toast.LENGTH_LONG).show();
-					if(operation == HUMIDITY)
+					}
+					if(operation == HUMIDITY){
+						new SparkCoreConnection().execute("humidity");
 						Toast.makeText(getApplicationContext(), "Retrieving humidity level", Toast.LENGTH_LONG).show();
-					if(operation == CO2)
+					}
+					if(operation == CO2){
+						new SparkCoreConnection().execute("co2");
 						Toast.makeText(getApplicationContext(), "Retrieving CO2 level", Toast.LENGTH_LONG).show();
-					
-					new SparkCoreConnection().execute(textBox.getText().toString());
-					Toast.makeText(getApplicationContext(), "Sending text to SparkCore", Toast.LENGTH_LONG).show();
-				}
+					}
+					Toast.makeText(getApplicationContext(), "Sending text to SparkCore", Toast.LENGTH_LONG).show();				}
 			}
 		}
 	}
