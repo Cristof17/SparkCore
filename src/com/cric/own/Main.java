@@ -134,7 +134,7 @@ public class Main extends Activity {
 			return TEMPERATURE;
 		}
 		
-		if(text.contains("CO2") || text.contains("bioxid") || text.contains("carbon") || text.contains("dioxid")){
+		if(text.contains("co2") || text.contains("bioxid") || text.contains("carbon") || text.contains("dioxid")){
 			return CO2;
 		}
 
