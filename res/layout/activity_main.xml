@@ -22,12 +22,24 @@
         android:id="@+id/banner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send this to Spark Core "
+        android:text="Ask Spark Core something "
+        android:gravity="center_horizontal"
         android:fontFamily="sans-serif-thin" 
         android:textColor="#000000"
         android:textSize="30sp"
         android:layout_centerHorizontal="true"
         android:layout_above="@id/text_box">     
     </TextView>
+    
+    <Button 
+        android:id= "@+id/speak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Speak"
+        android:textColor="#AAAAAA"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/text_box"
+        android:layout_marginTop="20dp">
+    </Button>
     
 </RelativeLayout>
