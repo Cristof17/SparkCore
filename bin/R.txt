@@ -353,7 +353,7 @@ int id action_menu_presenter 0x7f090006
 int id action_mode_bar 0x7f090030
 int id action_mode_bar_stub 0x7f09002f
 int id action_mode_close_button 0x7f090022
-int id action_settings 0x7f090046
+int id action_settings 0x7f090047
 int id activity_chooser_view_content 0x7f090023
 int id always 0x7f090014
 int id banner 0x7f090042
@@ -384,8 +384,8 @@ int id normal 0x7f09000b
 int id progress_circular 0x7f090007
 int id progress_horizontal 0x7f090008
 int id radio 0x7f09002d
-int id result_layout 0x7f090044
-int id result_text 0x7f090045
+int id result_layout 0x7f090045
+int id result_text 0x7f090046
 int id search_badge 0x7f090037
 int id search_bar 0x7f090036
 int id search_button 0x7f090038
@@ -409,6 +409,7 @@ int id title 0x7f090029
 int id top 0x7f09001f
 int id up 0x7f090001
 int id useLogo 0x7f090013
+int id wifi 0x7f090044
 int id withText 0x7f090018
 int id wrap_content 0x7f090009
 int integer abc_max_action_buttons 0x7f080000

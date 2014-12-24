@@ -24,19 +24,25 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,8 +60,6 @@ public class Main extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		
 		
 		TextView banner = (TextView)findViewById(R.id.banner);
 		
@@ -82,11 +86,11 @@ public class Main extends Activity {
 					if(operation == LIGHT){
 						new SparkCoreConnection().execute("text","light");
 						try {
-							String light_level = new SparkCoreConnection().execute("getLight","none").get();
+							String light_level = new SparkGetAsync().execute("light").get();
 							Toast.makeText(getApplicationContext(), "Light level = "+ light_level, Toast.LENGTH_LONG).show();
 							
 							if(light_level.equals("0") || light_level.equals("1")){
-								light_level = new SparkCoreConnection().execute("getLight","none").get();
+								light_level = new SparkGetAsync().execute("light").get();
 							}
 							Intent lightIntent = new Intent(getApplicationContext(),ResultActivity.class);
 							lightIntent.putExtra("type", "light");
@@ -134,11 +138,51 @@ public class Main extends Activity {
 			}
 		});
 		
-		ObjectAnimator animator_speak_button = ObjectAnimator.ofFloat(speak, View.TRANSLATION_Y, getWindowManager().getDefaultDisplay().getHeight(),textBox.getY());
+		ObjectAnimator animator_speak_button = ObjectAnimator.ofFloat(speak, View.TRANSLATION_Y, getWindowManager().getDefaultDisplay().getHeight(),0);
 		animator_speak_button.setRepeatCount(0);
 		animator_speak_button.setDuration(1000);
 		animator_speak_button.setRepeatMode(ValueAnimator.INFINITE);
 		animator_speak_button.start();
+		
+		Button WiFi = (Button)findViewById(com.cric.own.R.id.wifi);
+		ObjectAnimator animator_wifi_button = ObjectAnimator.ofFloat(WiFi, View.TRANSLATION_Y, getWindowManager().getDefaultDisplay().getHeight(),0);
+		animator_wifi_button.setRepeatCount(0);
+		animator_wifi_button.setDuration(1000);
+		animator_wifi_button.setRepeatMode(ValueAnimator.INFINITE);
+		animator_wifi_button.setStartDelay(250);
+		animator_wifi_button.start();
+		
+		WiFi.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				final EditText SSID = new EditText(getApplicationContext());
+				SSID.setHint("SSID");
+				
+				final EditText Password = new EditText(getApplicationContext());
+				Password.setHint("Parola");
+				Password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+				builder.setTitle("Introduceti credentiale");
+				builder.setCancelable(true);
+				builder.setNegativeButton("Renunta", null);
+				builder.setPositiveButton("Gata", new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Toast.makeText(getApplicationContext(), "Gata apasat", Toast.LENGTH_LONG).show(); 
+						new SparkCoreConnection().execute("credentials",SSID.getText().toString()+" "+Password.getText().toString());
+					}
+				});
+				
+				LinearLayout WiFiLayout = createLinearLayout(SSID,Password);						
+				builder.setView(WiFiLayout);
+				builder.create().show();
+			}
+		});
+		
 		
 	
 	}
@@ -172,10 +216,10 @@ public class Main extends Activity {
 					if(operation == LIGHT){
 						new SparkCoreConnection().execute("text","light");
 						try {
-							String light_level = new SparkCoreConnection().execute("getLight","none").get();
+							String light_level = new SparkGetAsync().execute("light").get();
 							Toast.makeText(getApplicationContext(), "Light level = "+ light_level, Toast.LENGTH_LONG).show();
 							if(light_level.equals("0") || light_level.equals("1")){
-								light_level = new SparkCoreConnection().execute("getLight","none").get();
+								light_level = new SparkGetAsync().execute("light").get();
 							}
 							Intent lightIntent = new Intent(getApplicationContext(),ResultActivity.class);
 							lightIntent.putExtra("type", "light");
@@ -202,6 +246,15 @@ public class Main extends Activity {
 		}
 	}
 
+	private LinearLayout createLinearLayout(View...views ){
+		LinearLayout layout = new LinearLayout(getApplicationContext());
+		layout.setOrientation(LinearLayout.VERTICAL);
+		for(int i = 0 ; i < views.length; i++){
+			layout.addView(views[i]);
+		}
+		return layout;
+	}
+	
 	private void hideSoftKeyboard(){
 	    if(getCurrentFocus()!=null && getCurrentFocus() instanceof EditText){
 	        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -265,7 +318,7 @@ public class Main extends Activity {
 				URL url = new URL("https://api.spark.io/v1/devices/" + "53ff72066667574846452367" + "/"+params[0]+"/");
 				HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 				con.setRequestMethod("POST");
-				String urlParameters = "access_token=" + "708724b49e2162c67b0b4347cc209ee5058abdaa" + "&args=" + ""+(params[1]);
+				String urlParameters = "access_token=" + "708724b49e2162c67b0b4347cc209ee5058abdaa" + "&args=" + " "+(params[1]+" ");
 				con.setDoOutput(true);
 				
 				DataOutputStream out = new DataOutputStream(con.getOutputStream());
@@ -305,27 +358,41 @@ public class Main extends Activity {
 	
 	private class SparkGetAsync extends AsyncTask<String, Void, String>{
 
+		
+			
 		@Override
 		protected String doInBackground(String... params) {
-			
+			String value = null;
 			try {
-			HttpClient client = new DefaultHttpClient();
-			HttpGet get = new HttpGet("https://api.spark.io/v1/devices/" + "53ff72066667574846452367" + "/"+params[0]);
-			get.setHeader("authorization","708724b49e2162c67b0b4347cc209ee5058abdaa");
-			HttpResponse response ;
-			
-			response = client.execute(get);
-			String rasp;
-			
-				rasp = EntityUtils.toString(response.getEntity());
-			
-			Log.d("TAG", "Variable is "+rasp);
-			} catch (ParseException | IOException e) {
+				URL url = new URL("https://api.spark.io/v1/devices/" + "53ff72066667574846452367" + "/"+params[0]+"?access_token=" + "708724b49e2162c67b0b4347cc209ee5058abdaa");
+				HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+				con.setRequestMethod("GET");
+				
+				StringBuilder response = new StringBuilder();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String line ;
+				
+				while((line = reader.readLine()) !=null){
+					response.append(line);
+				}
+				value = response.toString();
+				Log.d("Own", "Response is "+response) ;
+				
+				JSONObject root = new JSONObject(response.toString());
+				value = root.getString("result");
+				reader.close();
+					
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		
-			return null;
+			return value;
 		}
 		
 	}
