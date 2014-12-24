@@ -37,6 +37,7 @@ import android.speech.RecognizerIntent;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -89,7 +90,7 @@ public class Main extends Activity {
 							String light_level = new SparkGetAsync().execute("light").get();
 							Toast.makeText(getApplicationContext(), "Light level = "+ light_level, Toast.LENGTH_LONG).show();
 							
-							if(light_level.equals("0") || light_level.equals("1")){
+							if(light_level.equals("0") || light_level.equals("1") || Integer.parseInt(light_level) > 4000){
 								light_level = new SparkGetAsync().execute("light").get();
 							}
 							Intent lightIntent = new Intent(getApplicationContext(),ResultActivity.class);
@@ -149,13 +150,35 @@ public class Main extends Activity {
 		animator_wifi_button.setRepeatCount(0);
 		animator_wifi_button.setDuration(1000);
 		animator_wifi_button.setRepeatMode(ValueAnimator.INFINITE);
-		animator_wifi_button.setStartDelay(250);
+		animator_wifi_button.setStartDelay(400);
 		animator_wifi_button.start();
 		
 		WiFi.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
+				
+				final AlertDialog.Builder builder = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+				AlertDialog.Builder info = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+				info.setTitle("Nu te asteptai la asta");
+				TextView informatii = new TextView(getApplicationContext());
+				informatii.setText("Pentru a muta Spark Core-ul in alta parte trebuie sa te asiguri ca ai Wi Fi acolo unde vrei sa il muti" +
+						".Daca nu ai Wi Fi atunci apasa butonul de mai" +
+						" jos si adauga credentialele noului punct de acces de internet");
+				informatii.setGravity(Gravity.CENTER);
+				informatii.setTextSize(20);
+				info.setView(informatii);
+				
+				info.setPositiveButton("Asa o sa fac", new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						builder.create().show();
+					}
+				});
+				info.setNegativeButton("Nu vreau !!", null);
+				
+				info.create().show();
 				
 				final EditText SSID = new EditText(getApplicationContext());
 				SSID.setHint("SSID");
@@ -164,10 +187,9 @@ public class Main extends Activity {
 				Password.setHint("Parola");
 				Password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
 				
-				AlertDialog.Builder builder = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+				
 				builder.setTitle("Introduceti credentiale");
 				builder.setCancelable(true);
-				builder.setNegativeButton("Renunta", null);
 				builder.setPositiveButton("Gata", new OnClickListener() {
 					
 					@Override
@@ -176,10 +198,10 @@ public class Main extends Activity {
 						new SparkCoreConnection().execute("credentials",SSID.getText().toString()+" "+Password.getText().toString());
 					}
 				});
-				
+				builder.setNegativeButton("Renunta", null);
 				LinearLayout WiFiLayout = createLinearLayout(SSID,Password);						
 				builder.setView(WiFiLayout);
-				builder.create().show();
+//				builder.create().show();
 			}
 		});
 		
@@ -218,7 +240,7 @@ public class Main extends Activity {
 						try {
 							String light_level = new SparkGetAsync().execute("light").get();
 							Toast.makeText(getApplicationContext(), "Light level = "+ light_level, Toast.LENGTH_LONG).show();
-							if(light_level.equals("0") || light_level.equals("1")){
+							if(light_level.equals("0") || light_level.equals("1") || Integer.parseInt(light_level) > 4000){
 								light_level = new SparkGetAsync().execute("light").get();
 							}
 							Intent lightIntent = new Intent(getApplicationContext(),ResultActivity.class);

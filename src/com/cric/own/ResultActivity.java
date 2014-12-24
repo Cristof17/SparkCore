@@ -38,11 +38,11 @@ public class ResultActivity extends Activity{
 		switch (type) {
 		case "light":
 			if(value < 1024)
-				resultTextView.setText("Camera este foarte intunecata");
-			else if(1024 < value && value < 2048)
-				resultTextView.setText("Camera este luminata normal");
-			else if (value > 2048)
 				resultTextView.setText("Camera este foarte luminata");
+			else if(1024 < value && value < 3000)
+				resultTextView.setText("Camera este luminata normal");
+			else if (value > 3000)
+				resultTextView.setText("Camera este intunecata");
 			break;
 
 		default:
