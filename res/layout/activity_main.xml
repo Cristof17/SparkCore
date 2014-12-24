@@ -16,7 +16,8 @@
         android:textSize="30sp"
         android:gravity="center"
         android:fontFamily="sans-serif-thin"
-        android:layout_centerVertical="true"></EditText>
+        android:layout_centerVertical="true"
+        android:hint = "Scrie aici si apasa enter"></EditText>
 
     
     <TextView
@@ -36,7 +37,7 @@
         android:id= "@+id/speak"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Speak"
+        android:text="Vorbestess"
         android:fontFamily="sans-serif-thin" 
         android:textColor="#000000"
         android:textSize="25sp"

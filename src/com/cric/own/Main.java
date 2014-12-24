@@ -20,6 +20,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -32,8 +34,10 @@ import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 @SuppressLint("NewApi")
@@ -51,6 +55,17 @@ public class Main extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		
+		
+		TextView banner = (TextView)findViewById(R.id.banner);
+		
+		ObjectAnimator animator_banner_text = ObjectAnimator.ofFloat(banner, View.TRANSLATION_Y,(-1)*getWindowManager().getDefaultDisplay().getHeight(),0);
+		animator_banner_text.setRepeatCount(0);
+		animator_banner_text.setDuration(1000);
+		animator_banner_text.setRepeatMode(ValueAnimator.INFINITE);
+		animator_banner_text.start();
+		
+		
 		textBox = (EditText)findViewById(R.id.text_box);
 		textBox.setOnKeyListener(new View.OnKeyListener() {
 			
@@ -58,6 +73,7 @@ public class Main extends Activity {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if(haveNetworkConnection()){
 				if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+					hideSoftKeyboard();
 					Integer operation = getFeature(textBox.getText().toString());
 					if(operation == TEMPERATURE){
 						new SparkCoreConnection().execute("text","temperature");
@@ -99,6 +115,12 @@ public class Main extends Activity {
 			}
 		});
 		
+		ObjectAnimator animator_text_box = ObjectAnimator.ofFloat(textBox,View.ALPHA,1f);
+		animator_text_box.setRepeatCount(0);
+		animator_text_box.setDuration(1000);
+		animator_text_box.setRepeatMode(ValueAnimator.INFINITE);
+		animator_text_box.start();
+		
 		Button speak = (Button)findViewById(R.id.speak);
 		speak.setOnClickListener(new View.OnClickListener() {
 			
@@ -112,6 +134,13 @@ public class Main extends Activity {
 			}
 		});
 		
+		ObjectAnimator animator_speak_button = ObjectAnimator.ofFloat(speak, View.TRANSLATION_Y, getWindowManager().getDefaultDisplay().getHeight(),textBox.getY());
+		animator_speak_button.setRepeatCount(0);
+		animator_speak_button.setDuration(1000);
+		animator_speak_button.setRepeatMode(ValueAnimator.INFINITE);
+		animator_speak_button.start();
+		
+	
 	}
 	
 	
@@ -148,7 +177,6 @@ public class Main extends Activity {
 							if(light_level.equals("0") || light_level.equals("1")){
 								light_level = new SparkCoreConnection().execute("getLight","none").get();
 							}
-							
 							Intent lightIntent = new Intent(getApplicationContext(),ResultActivity.class);
 							lightIntent.putExtra("type", "light");
 							lightIntent.putExtra("value", Integer.parseInt(light_level));
@@ -174,9 +202,16 @@ public class Main extends Activity {
 		}
 	}
 
-
-
-
+	private void hideSoftKeyboard(){
+	    if(getCurrentFocus()!=null && getCurrentFocus() instanceof EditText){
+	        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+	        imm.hideSoftInputFromWindow(textBox.getWindowToken(), 0);
+	        imm.hideSoftInputFromInputMethod(textBox.getWindowToken(), 0);
+	    }
+	}
+	
+	
+	
 	public int getFeature(String text){
 		text = text.toLowerCase();
 		
