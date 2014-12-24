@@ -7,12 +7,25 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -43,27 +56,45 @@ public class Main extends Activity {
 			
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if(haveNetworkConnection()){
 				if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
 					Integer operation = getFeature(textBox.getText().toString());
 					if(operation == TEMPERATURE){
-						new SparkCoreConnection().execute("temperature");
+						new SparkCoreConnection().execute("text","temperature");
 						Toast.makeText(getApplicationContext(), "Retrieving temperature", Toast.LENGTH_LONG).show();
 					}
 					if(operation == LIGHT){
-						new SparkCoreConnection().execute("light");
+						new SparkCoreConnection().execute("text","light");
+						try {
+							String light_level = new SparkCoreConnection().execute("getLight","none").get();
+							Toast.makeText(getApplicationContext(), "Light level = "+ light_level, Toast.LENGTH_LONG).show();
+							
+							if(light_level.equals("0") || light_level.equals("1")){
+								light_level = new SparkCoreConnection().execute("getLight","none").get();
+							}
+							Intent lightIntent = new Intent(getApplicationContext(),ResultActivity.class);
+							lightIntent.putExtra("type", "light");
+							lightIntent.putExtra("value", Integer.parseInt(light_level));
+							startActivity(lightIntent);
+						} catch (InterruptedException | ExecutionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						Toast.makeText(getApplicationContext(), "Retrieving light level", Toast.LENGTH_LONG).show();
 					}
 					if(operation == HUMIDITY){
-						new SparkCoreConnection().execute("humidity");
+						new SparkCoreConnection().execute("text","humidity");
 						Toast.makeText(getApplicationContext(), "Retrieving humidity level", Toast.LENGTH_LONG).show();
 					}
 					if(operation == CO2){
-						new SparkCoreConnection().execute("co2");
+						new SparkCoreConnection().execute("text","co2");
 						Toast.makeText(getApplicationContext(), "Retrieving CO2 level", Toast.LENGTH_LONG).show();
 					}
-					Toast.makeText(getApplicationContext(), "Sending text to SparkCore", Toast.LENGTH_LONG).show();
 					return true;
 				}
+				}//endof haveNetworkConnection();
+				else
+					Toast.makeText(getApplicationContext(), "No internet connection ", Toast.LENGTH_SHORT).show();
 				return false;
 			}
 		});
@@ -102,23 +133,43 @@ public class Main extends Activity {
 					textBox.setText(speechLine);
 					
 					Integer operation = getFeature(speechLine);
+					
+					if(haveNetworkConnection()){
+						
 					if(operation == TEMPERATURE){
-						new SparkCoreConnection().execute("temperature");
+						new SparkCoreConnection().execute("text","temperature");
 						Toast.makeText(getApplicationContext(), "Retrieving temperature", Toast.LENGTH_LONG).show();
 					}
 					if(operation == LIGHT){
-						new SparkCoreConnection().execute("light");
+						new SparkCoreConnection().execute("text","light");
+						try {
+							String light_level = new SparkCoreConnection().execute("getLight","none").get();
+							Toast.makeText(getApplicationContext(), "Light level = "+ light_level, Toast.LENGTH_LONG).show();
+							if(light_level.equals("0") || light_level.equals("1")){
+								light_level = new SparkCoreConnection().execute("getLight","none").get();
+							}
+							
+							Intent lightIntent = new Intent(getApplicationContext(),ResultActivity.class);
+							lightIntent.putExtra("type", "light");
+							lightIntent.putExtra("value", Integer.parseInt(light_level));
+							startActivity(lightIntent);
+						} catch (InterruptedException | ExecutionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						Toast.makeText(getApplicationContext(), "Retrieving light level", Toast.LENGTH_LONG).show();
 					}
 					if(operation == HUMIDITY){
-						new SparkCoreConnection().execute("humidity");
+						new SparkCoreConnection().execute("text","humidity");
 						Toast.makeText(getApplicationContext(), "Retrieving humidity level", Toast.LENGTH_LONG).show();
 					}
 					if(operation == CO2){
-						new SparkCoreConnection().execute("co2");
+						new SparkCoreConnection().execute("text","co2");
 						Toast.makeText(getApplicationContext(), "Retrieving CO2 level", Toast.LENGTH_LONG).show();
 					}
-					Toast.makeText(getApplicationContext(), "Sending text to SparkCore", Toast.LENGTH_LONG).show();				}
+					}else
+						Toast.makeText(getApplicationContext(), "No internet connection", Toast.LENGTH_SHORT).show();//endof haveNetworkConnection
+				}
 			}
 		}
 	}
@@ -150,15 +201,36 @@ public class Main extends Activity {
 		return Integer.MIN_VALUE;
 	}
 	
-	private class SparkCoreConnection extends AsyncTask<String, Boolean, Boolean>{
+	
+	private boolean haveNetworkConnection() {
+	    boolean haveConnectedWifi = false;
+	    boolean haveConnectedMobile = false;
+
+	    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+	    for (NetworkInfo ni : netInfo) {
+	        if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+	            if (ni.isConnected())
+	                haveConnectedWifi = true;
+	        if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+	            if (ni.isConnected())
+	                haveConnectedMobile = true;
+	    }
+	    return haveConnectedWifi || haveConnectedMobile;
+	}
+	
+	
+	private class SparkCoreConnection extends AsyncTask<String, Boolean, String>{
 
 		@Override
-		protected Boolean doInBackground(String... params) {
+		
+		protected String doInBackground(String... params) {
+			String value = null;
 			try {
-				URL url = new URL("https://api.spark.io/v1/devices/" + "53ff72066667574846452367" + "/"+"text/");
+				URL url = new URL("https://api.spark.io/v1/devices/" + "53ff72066667574846452367" + "/"+params[0]+"/");
 				HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 				con.setRequestMethod("POST");
-				String urlParameters = "access_token=" + "16410d29d21c6bb44c3110228b72f6972ebe3514" + "&args=" + ""+(params[0]);
+				String urlParameters = "access_token=" + "708724b49e2162c67b0b4347cc209ee5058abdaa" + "&args=" + ""+(params[1]);
 				con.setDoOutput(true);
 				
 				DataOutputStream out = new DataOutputStream(con.getOutputStream());
@@ -175,6 +247,10 @@ public class Main extends Activity {
 				}
 				
 				Log.d("Own", "Response is "+response) ;
+				
+				JSONObject json_root = new JSONObject(response.toString());
+				value = json_root.getString("return_value");
+				
 				reader.close();
 					
 			} catch (MalformedURLException e) {
@@ -183,9 +259,40 @@ public class Main extends Activity {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			return value;
+		}
+	}
+	
+	
+	private class SparkGetAsync extends AsyncTask<String, Void, String>{
+
+		@Override
+		protected String doInBackground(String... params) {
+			
+			try {
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet("https://api.spark.io/v1/devices/" + "53ff72066667574846452367" + "/"+params[0]);
+			get.setHeader("authorization","708724b49e2162c67b0b4347cc209ee5058abdaa");
+			HttpResponse response ;
+			
+			response = client.execute(get);
+			String rasp;
+			
+				rasp = EntityUtils.toString(response.getEntity());
+			
+			Log.d("TAG", "Variable is "+rasp);
+			} catch (ParseException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 			return null;
 		}
+		
 	}
 }
 
