@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
@@ -41,6 +40,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,7 +63,7 @@ public class Main extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		TextView banner = (TextView)findViewById(R.id.banner);
+		ImageView banner = (ImageView)findViewById(R.id.banner);
 		
 		ObjectAnimator animator_banner_text = ObjectAnimator.ofFloat(banner, View.TRANSLATION_Y,(-1)*getWindowManager().getDefaultDisplay().getHeight(),0);
 		animator_banner_text.setRepeatCount(0);
@@ -121,9 +121,9 @@ public class Main extends Activity {
 			}
 		});
 		
-		ObjectAnimator animator_text_box = ObjectAnimator.ofFloat(textBox,View.ALPHA,1f);
+		ObjectAnimator animator_text_box = ObjectAnimator.ofFloat(textBox,View.ALPHA,0.10f,1,1);
 		animator_text_box.setRepeatCount(0);
-		animator_text_box.setDuration(1000);
+		animator_text_box.setDuration(1700);
 		animator_text_box.setRepeatMode(ValueAnimator.INFINITE);
 		animator_text_box.start();
 		
@@ -177,7 +177,17 @@ public class Main extends Activity {
 						builder.create().show();
 					}
 				});
-				info.setNegativeButton("Nu vreau !!", null);
+				info.setNegativeButton("Nu vreau !!", new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if(!wifiManager.isWifiEnabled()){
+							wifiManager.setWifiEnabled(true);
+							//close the tethering
+						}
+						
+					}
+				});
 				
 				info.create().show();
 				

@@ -343,6 +343,9 @@ int drawable button_pressed 0x7f020035
 int drawable edit_text 0x7f020036
 int drawable ic_launcher 0x7f020037
 int drawable mic 0x7f020038
+int drawable muta 0x7f020039
+int drawable text 0x7f02003a
+int drawable vorbeste 0x7f02003b
 int id action_bar 0x7f090033
 int id action_bar_activity_content 0x7f090003
 int id action_bar_container 0x7f090032

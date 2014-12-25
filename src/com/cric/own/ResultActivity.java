@@ -35,19 +35,23 @@ public class ResultActivity extends Activity{
 		String type = intent.getExtras().getString("type");
 		int value = intent.getExtras().getInt("value");
 		
+		int percent = Math.round((float)100 - ((float)(value/4100)*100));
+		
 		switch (type) {
 		case "light":
-			if(value < 1024)
-				resultTextView.setText("Camera este foarte luminata");
-			else if(1024 < value && value < 3000)
-				resultTextView.setText("Camera este luminata normal");
+			if(value < 2150)
+				resultTextView.setText("Camera este foarte luminata\n" + percent +"%");
+			else if(2150 <= value && value <= 3000)
+				resultTextView.setText("Camera este luminata normal\n" + percent +"%");
 			else if (value > 3000)
-				resultTextView.setText("Camera este intunecata");
+				resultTextView.setText("Camera este intunecata\n" + percent +"%");
 			break;
 
 		default:
 			break;
 		}
+		
+		
 		
 	}
 	

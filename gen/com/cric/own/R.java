@@ -1643,6 +1643,9 @@ containing a value of this type.
         public static final int edit_text=0x7f020036;
         public static final int ic_launcher=0x7f020037;
         public static final int mic=0x7f020038;
+        public static final int muta=0x7f020039;
+        public static final int text=0x7f02003a;
+        public static final int vorbeste=0x7f02003b;
     }
     public static final class id {
         public static final int action_bar=0x7f090033;

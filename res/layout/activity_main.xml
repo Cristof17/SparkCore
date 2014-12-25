@@ -20,49 +20,54 @@
         android:hint = "Scrie aici si apasa enter"></EditText>
 
     
-    <TextView
+    <ImageView
         android:id="@+id/banner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ce vrei serifule ? "
         android:gravity="center_horizontal"
-        android:fontFamily="sans-serif-thin" 
-        android:textColor="#000000"
-        android:textSize="40sp"
         android:layout_centerHorizontal="true"
+        android:src="@drawable/text"
+        android:adjustViewBounds="true"
         android:layout_above="@id/text_box">     
-    </TextView>
+    </ImageView>
+    
+    <LinearLayout
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:orientation="horizontal"
+        android:layout_below="@id/text_box"
+        android:layout_marginTop="10dp">
     
     <Button 
         android:id= "@+id/speak"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Vorbeste"
-        android:fontFamily="sans-serif-thin" 
+        android:layout_weight="1.5"
+        android:text="#Vorbeste"
+        android:fontFamily="sans-serif" 
         android:textColor="#000000"
         android:textSize="25sp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/text_box"
-        android:layout_marginTop="20dp"
         android:background="@drawable/button"
-        android:padding="10dp">
+        android:padding="5dp"
+        android:layout_margin="0dp">
     </Button>
     
     <Button
         android:id="@+id/wifi"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_below="@id/speak"
-        android:layout_centerHorizontal="true"
+        android:layout_width="fill_parent"
         android:gravity="center_horizontal"
-        android:text="Vreau sa il mut"
+        android:layout_weight="1"
+        android:text="#Schimba locatia"
         android:textSize="25sp"
         android:textColor="#000000"
-        android:fontFamily="sans-serif-thin"
+        android:fontFamily="sans-serif"
         android:background="@drawable/button"
-        android:layout_margin="5dp"
-        android:padding="10dp">
+        android:padding="5dp"
+        android:layout_margin="0dp">
         
     </Button>
+    </LinearLayout>
     
 </RelativeLayout>
