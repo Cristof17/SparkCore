@@ -158,6 +158,7 @@ public class Main extends Activity {
 			
 			@Override
 			public void onClick(View v) {
+				createWifiAccessPoint(); //start the tethering process
 				final AlertDialog.Builder builder = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
 				AlertDialog.Builder info = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
 				info.setTitle("Nu te asteptai la asta");
@@ -173,7 +174,6 @@ public class Main extends Activity {
 					
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
-						createWifiAccessPoint(); //start the tethering process
 						builder.create().show();
 					}
 				});
@@ -195,7 +195,7 @@ public class Main extends Activity {
 					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						Toast.makeText(getApplicationContext(), "Gata apasat", Toast.LENGTH_LONG).show(); 
+						Toast.makeText(getApplicationContext(), "Cerere trimisa", Toast.LENGTH_LONG).show(); 
 						new SparkCoreConnection().execute("credentials",SSID.getText().toString()+" "+Password.getText().toString());
 						
 						if(!wifiManager.isWifiEnabled()){
