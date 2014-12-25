@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,12 +13,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,13 +25,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.text.InputType;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -55,6 +53,8 @@ public class Main extends Activity {
 	private static final int LIGHT = 2 ;
 	private static final int HUMIDITY = 3 ;
 	
+	private WifiManager wifiManager;
+	
 	private EditText textBox;
 
 	@Override
@@ -62,6 +62,7 @@ public class Main extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		TextView banner = (TextView)findViewById(R.id.banner);
 		
 		ObjectAnimator animator_banner_text = ObjectAnimator.ofFloat(banner, View.TRANSLATION_Y,(-1)*getWindowManager().getDefaultDisplay().getHeight(),0);
@@ -130,7 +131,7 @@ public class Main extends Activity {
 		speak.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
-			public void onClick(View arg0) {
+			public void onClick(View v) {
 				Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 				speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
 				
@@ -150,14 +151,13 @@ public class Main extends Activity {
 		animator_wifi_button.setRepeatCount(0);
 		animator_wifi_button.setDuration(1000);
 		animator_wifi_button.setRepeatMode(ValueAnimator.INFINITE);
-		animator_wifi_button.setStartDelay(400);
+		animator_wifi_button.setStartDelay(250);
 		animator_wifi_button.start();
 		
 		WiFi.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				
 				final AlertDialog.Builder builder = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
 				AlertDialog.Builder info = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
 				info.setTitle("Nu te asteptai la asta");
@@ -173,6 +173,7 @@ public class Main extends Activity {
 					
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
+						createWifiAccessPoint(); //start the tethering process
 						builder.create().show();
 					}
 				});
@@ -196,9 +197,24 @@ public class Main extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						Toast.makeText(getApplicationContext(), "Gata apasat", Toast.LENGTH_LONG).show(); 
 						new SparkCoreConnection().execute("credentials",SSID.getText().toString()+" "+Password.getText().toString());
+						
+						if(!wifiManager.isWifiEnabled()){
+							wifiManager.setWifiEnabled(true);
+							//close the tethering
+						}
 					}
 				});
-				builder.setNegativeButton("Renunta", null);
+				builder.setNegativeButton("Renunta", new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						if(!wifiManager.isWifiEnabled()){
+							wifiManager.setWifiEnabled(true);
+							//close the tethering
+						}
+						
+					}
+				});
 				LinearLayout WiFiLayout = createLinearLayout(SSID,Password);						
 				builder.setView(WiFiLayout);
 //				builder.create().show();
@@ -417,6 +433,55 @@ public class Main extends Activity {
 			return value;
 		}
 		
+	}
+	
+	private void createWifiAccessPoint() {
+		
+		
+	    if(wifiManager.isWifiEnabled())
+	    {
+	        wifiManager.setWifiEnabled(false);          
+	    }       
+	    Method[] wmMethods = wifiManager.getClass().getDeclaredMethods();   
+	    boolean methodFound=false;
+	    for(Method method: wmMethods){
+	        if(method.getName().equals("setWifiApEnabled")){
+	            methodFound=true;
+	            WifiConfiguration netConfig = new WifiConfiguration();
+	            netConfig.SSID = "AccessPoint"; 
+	            netConfig.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+	            try {
+	                boolean apstatus=(Boolean) method.invoke(wifiManager, netConfig,true);          
+	                for (Method isWifiApEnabledmethod: wmMethods)
+	                {
+	                    if(isWifiApEnabledmethod.getName().equals("isWifiApEnabled")){
+	                        while(!(Boolean)isWifiApEnabledmethod.invoke(wifiManager)){
+	                        };
+	                        for(Method method1: wmMethods){
+	                            if(method1.getName().equals("getWifiApState")){
+	                                int apstate;
+	                                apstate=(Integer)method1.invoke(wifiManager);
+	                            }
+	                        }
+	                    }
+	                }
+	                if(apstatus)
+	                {
+	                    Log.d("Splash Activity", "Access Point created");   
+	                }else
+	                {
+	                    Log.d("Splash Activity", "Access Point creation failed");   
+	                }
+
+	            } catch (IllegalArgumentException e) {
+	                e.printStackTrace();
+	            } catch (IllegalAccessException e) {
+	                e.printStackTrace();
+	            } catch (InvocationTargetException e) {
+	                e.printStackTrace();
+	            }
+	        }      
+	    }
 	}
 }
 
