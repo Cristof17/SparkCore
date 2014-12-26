@@ -1,6 +1,7 @@
 package com.cric.own;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -34,9 +35,16 @@ public class ResultActivity extends Activity{
 		
 		String type = intent.getExtras().getString("type");
 		int value = intent.getExtras().getInt("value");
+		AlertDialog.Builder builder = new AlertDialog.Builder(ResultActivity.this);
 		
-		int percent = Math.round((float)100 - ((float)(value/4100)*100));
+		int percent = (int)(100-((float)value/4100)*100);
 		
+//		TextView newText = new TextView(getApplicationContext());
+//		newText.setText("Percent = "+(100-((float)value/4100)*100));
+//		
+//		builder.setView(newText);
+//		builder.setPositiveButton("Got it", null);
+//		builder.create().show();
 		switch (type) {
 		case "light":
 			if(value < 2150)

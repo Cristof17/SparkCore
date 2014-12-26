@@ -102,7 +102,6 @@ public class Main extends Activity {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						Toast.makeText(getApplicationContext(), "Retrieving light level", Toast.LENGTH_LONG).show();
 					}
 					if(operation == HUMIDITY){
 						new SparkCoreConnection().execute("text","humidity");
@@ -277,7 +276,6 @@ public class Main extends Activity {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						Toast.makeText(getApplicationContext(), "Retrieving light level", Toast.LENGTH_LONG).show();
 					}
 					if(operation == HUMIDITY){
 						new SparkCoreConnection().execute("text","humidity");
