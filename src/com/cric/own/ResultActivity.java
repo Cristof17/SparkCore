@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 public class ResultActivity extends Activity{
 
+	volatile TextView resultTextView;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -18,7 +20,7 @@ public class ResultActivity extends Activity{
 		overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 		
 		Intent intent = getIntent();
-		TextView resultTextView = (TextView)findViewById(R.id.result_text);
+		resultTextView = (TextView)findViewById(R.id.result_text);
 		RelativeLayout layout = (RelativeLayout)findViewById(R.id.result_layout);
 		Toast.makeText(getApplicationContext(), "Press anywhere to go back ", Toast.LENGTH_LONG).show();
 		
@@ -47,12 +49,15 @@ public class ResultActivity extends Activity{
 //		builder.create().show();
 		switch (type) {
 		case "light":
-			if(value < 2150)
-				resultTextView.setText("Camera este foarte luminata\n" + percent +"%");
-			else if(2150 <= value && value <= 3000)
-				resultTextView.setText("Camera este luminata normal\n" + percent +"%");
-			else if (value > 3000)
-				resultTextView.setText("Camera este intunecata\n" + percent +"%");
+			if(value < 2000)
+//				resultTextView.setText("Camera este foarte luminata\n" + percent +"%");
+				increaseWithThread("Camera este foarte luminata", percent);
+			else if(2000 <= value && value <= 3280)
+//				resultTextView.setText("Camera este luminata normal\n" + percent +"%");
+			increaseWithThread("Camera este luminata normal", percent);
+			else if (value > 3280)
+//				resultTextView.setText("Camera este intunecata\n" + percent +"%");
+			increaseWithThread("Camera este intunecata", percent);
 			break;
 
 		default:
@@ -64,7 +69,11 @@ public class ResultActivity extends Activity{
 	}
 	
 	
-
+	private void increaseWithThread(final String text ,final int value){
+		int contor = value;
+			resultTextView.setText(text+"\n"+contor+"%");
+	}
+	
 	@Override
 	protected void onPause() {
 		overridePendingTransition(R.anim.child_slide_in, R.anim.child_slide_out);
