@@ -1,9 +1,13 @@
 package com.cric.own;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,6 +22,11 @@ public class ResultActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.result_activity);
 		overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+		
+		ActionBar bar = getActionBar();
+		bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFF77")));
+		bar.setIcon(R.drawable.cristof2);
+		bar.setTitle(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("username", null));
 		
 		Intent intent = getIntent();
 		resultTextView = (TextView)findViewById(R.id.result_text);

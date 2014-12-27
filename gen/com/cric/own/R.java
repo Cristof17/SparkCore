@@ -1640,14 +1640,17 @@ containing a value of this type.
         public static final int button=0x7f020033;
         public static final int button_normal=0x7f020034;
         public static final int button_pressed=0x7f020035;
-        public static final int edit_text=0x7f020036;
-        public static final int ic_launcher=0x7f020037;
-        public static final int mic=0x7f020038;
-        public static final int muta=0x7f020039;
-        public static final int parola=0x7f02003a;
-        public static final int text=0x7f02003b;
-        public static final int utilizator=0x7f02003c;
-        public static final int vorbeste=0x7f02003d;
+        public static final int cristof2=0x7f020036;
+        public static final int edit_text=0x7f020037;
+        public static final int ic_launcher=0x7f020038;
+        public static final int mic=0x7f020039;
+        public static final int muta=0x7f02003a;
+        public static final int parola=0x7f02003b;
+        public static final int spark=0x7f02003c;
+        public static final int spark2=0x7f02003d;
+        public static final int text=0x7f02003e;
+        public static final int utilizator=0x7f02003f;
+        public static final int vorbeste=0x7f020040;
     }
     public static final class id {
         public static final int action_bar=0x7f0a0033;
@@ -1663,8 +1666,8 @@ containing a value of this type.
         public static final int action_mode_bar=0x7f0a0030;
         public static final int action_mode_bar_stub=0x7f0a002f;
         public static final int action_mode_close_button=0x7f0a0022;
-        public static final int action_settings=0x7f0a004e;
         public static final int activity_chooser_view_content=0x7f0a0023;
+        public static final int add_wi_fi=0x7f0a004d;
         public static final int always=0x7f0a0014;
         public static final int banner=0x7f0a0042;
         public static final int beginning=0x7f0a001b;
@@ -1686,21 +1689,21 @@ containing a value of this type.
         public static final int icon=0x7f0a0028;
         public static final int ifRoom=0x7f0a0016;
         public static final int image=0x7f0a0025;
-        public static final int image_password=0x7f0a0049;
-        public static final int image_user=0x7f0a0047;
+        public static final int image_password=0x7f0a0047;
+        public static final int image_user=0x7f0a0045;
         public static final int listMode=0x7f0a000a;
         public static final int list_item=0x7f0a0027;
-        public static final int login=0x7f0a004b;
+        public static final int login=0x7f0a0049;
         public static final int middle=0x7f0a001d;
         public static final int never=0x7f0a0017;
         public static final int none=0x7f0a000f;
         public static final int normal=0x7f0a000b;
-        public static final int password_edit_text=0x7f0a004a;
+        public static final int password_edit_text=0x7f0a0048;
         public static final int progress_circular=0x7f0a0007;
         public static final int progress_horizontal=0x7f0a0008;
         public static final int radio=0x7f0a002d;
-        public static final int result_layout=0x7f0a004c;
-        public static final int result_text=0x7f0a004d;
+        public static final int result_layout=0x7f0a004a;
+        public static final int result_text=0x7f0a004b;
         public static final int search_badge=0x7f0a0037;
         public static final int search_bar=0x7f0a0036;
         public static final int search_button=0x7f0a0038;
@@ -1711,7 +1714,7 @@ containing a value of this type.
         public static final int search_plate=0x7f0a003b;
         public static final int search_src_text=0x7f0a003c;
         public static final int search_voice_btn=0x7f0a0040;
-        public static final int settings=0x7f0a0046;
+        public static final int settings=0x7f0a004c;
         public static final int shortcut=0x7f0a002c;
         public static final int showCustom=0x7f0a0010;
         public static final int showHome=0x7f0a0011;
@@ -1725,8 +1728,7 @@ containing a value of this type.
         public static final int top=0x7f0a001f;
         public static final int up=0x7f0a0001;
         public static final int useLogo=0x7f0a0013;
-        public static final int user_edit_text=0x7f0a0048;
-        public static final int wifi=0x7f0a0045;
+        public static final int user_edit_text=0x7f0a0046;
         public static final int withText=0x7f0a0018;
         public static final int wrap_content=0x7f0a0009;
     }
@@ -1841,9 +1843,8 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0b000d;
-        public static final int action_settings=0x7f0b0011;
+        public static final int action_settings=0x7f0b0010;
         public static final int app_name=0x7f0b000f;
-        public static final int hello_world=0x7f0b0010;
     }
     public static final class style {
         /** 
@@ -1859,7 +1860,7 @@ containing a value of this type.
         Base application theme for API 11+. This theme completely replaces
         AppBaseTheme from res/values/styles.xml on API 11+ devices.
     
- API 11 theme customizations can go here. 
+ API 11 theme customizationy can go here. 
 
         Base application theme for API 14+. This theme completely replaces
         AppBaseTheme from BOTH res/values/styles.xml and

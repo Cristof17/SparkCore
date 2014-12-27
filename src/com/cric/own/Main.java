@@ -21,12 +21,15 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
@@ -39,6 +42,9 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -70,7 +76,12 @@ public class Main extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		ActionBar bar = getActionBar();
+		bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFF77")));
+		bar.setIcon(R.drawable.cristof2);
+		
 		EMAIL = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("username", null);
+		bar.setTitle(EMAIL);
 		PASSWORD = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("password", null);
 		ACCESS_TOKEN = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("access_token", null);
 		DEVICE = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("device", null);
@@ -189,161 +200,7 @@ public class Main extends Activity {
 			}
 		});
 		animator_speak_button.start();
-		
-		final Button WiFi = (Button)findViewById(com.cric.own.R.id.wifi);
-		WiFi.setAlpha(0f);
-		ObjectAnimator animator_wifi_button = ObjectAnimator.ofFloat(WiFi, View.TRANSLATION_X, getWindowManager().getDefaultDisplay().getWidth(),0);
-		animator_wifi_button.setRepeatCount(0);
-		animator_wifi_button.setDuration(1000);
-		animator_wifi_button.setRepeatMode(ValueAnimator.INFINITE);
-		animator_wifi_button.setStartDelay(750);
-		animator_wifi_button.addListener(new AnimatorListener() {
 			
-			@Override
-			public void onAnimationStart(Animator animation) {
-				WiFi.setAlpha(1f);
-				
-			}
-			
-			@Override
-			public void onAnimationRepeat(Animator animation) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				
-			}
-			
-			@Override
-			public void onAnimationCancel(Animator animation) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		animator_wifi_button.start();
-		
-		WiFi.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				createWifiAccessPoint(); //start the tethering process
-				final AlertDialog.Builder builder = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
-				AlertDialog.Builder info = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
-				info.setTitle("Nu te asteptai la asta");
-				TextView informatii = new TextView(getApplicationContext());
-				informatii.setText("Pentru a muta Spark Core-ul in alta parte trebuie sa te asiguri ca ai Wi Fi acolo unde vrei sa il muti" +
-						".Daca nu ai Wi Fi atunci apasa butonul de mai" +
-						" jos si adauga credentialele noului punct de acces de internet");
-				informatii.setGravity(Gravity.CENTER);
-				informatii.setTextSize(20);
-				info.setView(informatii);
-				
-				info.setPositiveButton("Asa o sa fac", new OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-						builder.create().show();
-					}
-				});
-				info.setNegativeButton("Nu vreau !!", new OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if(!wifiManager.isWifiEnabled()){
-							wifiManager.setWifiEnabled(true);
-							//close the tethering
-						}
-						
-					}
-				});
-				
-				info.create().show();
-				
-				final EditText SSID = new EditText(getApplicationContext());
-				SSID.setHint("SSID");
-				
-				final EditText Password = new EditText(getApplicationContext());
-				Password.setHint("Parola");
-				Password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-				
-				
-				builder.setTitle("Introduceti credentiale");
-				builder.setCancelable(true);
-				builder.setPositiveButton("Gata", new OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Toast.makeText(getApplicationContext(), "Cerere trimisa", Toast.LENGTH_LONG).show(); 
-						new SparkCoreConnection().execute("credentials",SSID.getText().toString()+" "+Password.getText().toString());
-						
-						if(!wifiManager.isWifiEnabled()){
-							wifiManager.setWifiEnabled(true);
-							//close the tethering
-						}
-					}
-				});
-				builder.setNegativeButton("Renunta", new OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-						if(!wifiManager.isWifiEnabled()){
-							wifiManager.setWifiEnabled(true);
-							//close the tethering
-						}
-						
-					}
-				});
-				LinearLayout WiFiLayout = createLinearLayout(SSID,Password);						
-				builder.setView(WiFiLayout);
-//				builder.create().show();
-			}
-		});
-		
-		final Button settings = (Button)findViewById(R.id.settings);
-		settings.setAlpha(0f);
-		settings.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(getApplicationContext(),SettingsActivity.class);
-				startActivity(intent);
-			}
-		});
-		
-		ObjectAnimator animator_settings_button = ObjectAnimator.ofFloat(settings, View.TRANSLATION_Y, getWindowManager().getDefaultDisplay().getHeight(),0);
-		animator_settings_button.setRepeatCount(0);
-		animator_settings_button.setDuration(1000);
-		animator_settings_button.setRepeatMode(ValueAnimator.INFINITE);
-		animator_settings_button.setStartDelay(1000);
-		animator_settings_button.addListener(new AnimatorListener() {
-			
-			@Override
-			public void onAnimationStart(Animator animation) {
-				settings.setAlpha(1f);
-			}
-			
-			@Override
-			public void onAnimationRepeat(Animator animation) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onAnimationCancel(Animator animation) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		animator_settings_button.start();
-	
 	}
 	
 	
@@ -403,6 +260,110 @@ public class Main extends Activity {
 			}
 		}
 	}
+	
+	
+	
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main,menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.settings:
+			Intent intent = new Intent(getApplicationContext(),SettingsActivity.class);
+			startActivity(intent);
+			break;
+			
+		case R.id.add_wi_fi:
+			
+			createWifiAccessPoint(); //start the tethering process
+			final AlertDialog.Builder builder = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+			AlertDialog.Builder info = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+			info.setTitle("Nu te asteptai la asta");
+			TextView informatii = new TextView(getApplicationContext());
+			informatii.setText("Pentru a muta Spark Core-ul in alta parte trebuie sa te asiguri ca ai Wi Fi acolo unde vrei sa il muti" +
+					".Daca nu ai Wi Fi atunci apasa butonul de mai" +
+					" jos si adauga credentialele noului punct de acces de internet");
+			informatii.setGravity(Gravity.CENTER);
+			informatii.setTextSize(20);
+			info.setView(informatii);
+			
+			info.setPositiveButton("Asa o sa fac", new OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {
+					builder.create().show();
+				}
+			});
+			info.setNegativeButton("Nu vreau !!", new OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if(!wifiManager.isWifiEnabled()){
+						wifiManager.setWifiEnabled(true);
+						//close the tethering
+					}
+					
+				}
+			});
+			
+			info.create().show();
+			
+			final EditText SSID = new EditText(getApplicationContext());
+			SSID.setHint("SSID");
+			
+			final EditText Password = new EditText(getApplicationContext());
+			Password.setHint("Parola");
+			Password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+			
+			
+			builder.setTitle("Introduceti credentiale");
+			builder.setCancelable(true);
+			builder.setPositiveButton("Gata", new OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Toast.makeText(getApplicationContext(), "Cerere trimisa", Toast.LENGTH_LONG).show(); 
+					new SparkCoreConnection().execute("credentials",SSID.getText().toString()+" "+Password.getText().toString());
+					
+					if(!wifiManager.isWifiEnabled()){
+						wifiManager.setWifiEnabled(true);
+						//close the tethering
+					}
+				}
+			});
+			builder.setNegativeButton("Renunta", new OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {
+					if(!wifiManager.isWifiEnabled()){
+						wifiManager.setWifiEnabled(true);
+						//close the tethering
+					}
+					
+				}
+			});
+			LinearLayout WiFiLayout = createLinearLayout(SSID,Password);						
+			builder.setView(WiFiLayout);
+			
+			break;
+
+		default:
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+
+
 
 	private LinearLayout createLinearLayout(View...views ){
 		LinearLayout layout = new LinearLayout(getApplicationContext());
