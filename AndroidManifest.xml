@@ -35,6 +35,11 @@
         <activity android:name =".ResultActivity">
             
         </activity>
+        
+        <activity android:name =".SettingsActivity">
+            
+        </activity>
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>

@@ -29,7 +29,7 @@ public class ResultActivity extends Activity{
 			@Override
 			public void onClick(View v) {
 				Intent backIntent = new Intent(getApplicationContext(),Main.class);
-				backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+					backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 				backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(backIntent);
 			}
@@ -37,6 +37,9 @@ public class ResultActivity extends Activity{
 		
 		String type = intent.getExtras().getString("type");
 		int value = intent.getExtras().getInt("value");
+		value = value + 1000;
+		if(value > 4094)
+			value = 4094;
 		AlertDialog.Builder builder = new AlertDialog.Builder(ResultActivity.this);
 		
 		int percent = (int)(100-((float)value/4100)*100);

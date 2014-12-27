@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<EditTextPreference 
+    android:key="username"
+    android:title="E-mail"
+    android:summary="In caz ca iti expira access-token-ul"/>    
+
+
+<EditTextPreference 
+    android:key="password"
+    android:title="Parola"
+    android:summary="In caz ca iti expira access-token-ul"/>    
+
+<EditTextPreference 
+    android:key="access_token"
+    android:title="Access Token"
+    android:summary="Acest access-token va fi folosit pentru a putea sa te conectezi la Cloud pentru a comunica cu Spark Core-ul"/>    
+
+<EditTextPreference 
+    android:key="device"
+    android:title="Device ID "
+    android:summary="Acest ID va fi folosit pentru a obtine informatia de la Spark Core-ul pe care il doresti."/>    
+
+
+</PreferenceScreen>

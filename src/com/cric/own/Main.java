@@ -16,6 +16,8 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -31,6 +33,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.text.InputType;
 import android.util.Log;
@@ -56,11 +59,27 @@ public class Main extends Activity {
 	private WifiManager wifiManager;
 	
 	private EditText textBox;
+	private String ACCESS_TOKEN ;
+	private String EMAIL ;
+	private String PASSWORD;
+	private String DEVICE;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		EMAIL = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("username", null);
+		PASSWORD = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("password", null);
+		ACCESS_TOKEN = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("access_token", null);
+		DEVICE = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("device", null);
+		
+		if(EMAIL == null || PASSWORD == null || ACCESS_TOKEN == null || DEVICE == null){
+			Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+			startActivity(intent);
+		}
+			
 		
 		wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		ImageView banner = (ImageView)findViewById(R.id.banner);
@@ -122,11 +141,11 @@ public class Main extends Activity {
 		
 		ObjectAnimator animator_text_box = ObjectAnimator.ofFloat(textBox,View.ALPHA,0.10f,1,1);
 		animator_text_box.setRepeatCount(0);
-		animator_text_box.setDuration(1700);
+		animator_text_box.setDuration(3000);
 		animator_text_box.setRepeatMode(ValueAnimator.INFINITE);
 		animator_text_box.start();
 		
-		Button speak = (Button)findViewById(R.id.speak);
+		final Button speak = (Button)findViewById(R.id.speak);
 		speak.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -138,19 +157,71 @@ public class Main extends Activity {
 				
 			}
 		});
-		
-		ObjectAnimator animator_speak_button = ObjectAnimator.ofFloat(speak, View.TRANSLATION_Y, getWindowManager().getDefaultDisplay().getHeight(),0);
+		speak.setAlpha(0f);
+		ObjectAnimator animator_speak_button = ObjectAnimator.ofFloat(speak, View.TRANSLATION_X, (-1)*getWindowManager().getDefaultDisplay().getWidth(),0);
 		animator_speak_button.setRepeatCount(0);
 		animator_speak_button.setDuration(1000);
 		animator_speak_button.setRepeatMode(ValueAnimator.INFINITE);
+		animator_speak_button.setStartDelay(500);
+		animator_speak_button.addListener(new AnimatorListener() {
+			
+			@Override
+			public void onAnimationStart(Animator animation) {
+				speak.setAlpha(1f);
+				
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				
+			}
+			
+			@Override
+			public void onAnimationCancel(Animator animation) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		animator_speak_button.start();
 		
-		Button WiFi = (Button)findViewById(com.cric.own.R.id.wifi);
-		ObjectAnimator animator_wifi_button = ObjectAnimator.ofFloat(WiFi, View.TRANSLATION_Y, getWindowManager().getDefaultDisplay().getHeight(),0);
+		final Button WiFi = (Button)findViewById(com.cric.own.R.id.wifi);
+		WiFi.setAlpha(0f);
+		ObjectAnimator animator_wifi_button = ObjectAnimator.ofFloat(WiFi, View.TRANSLATION_X, getWindowManager().getDefaultDisplay().getWidth(),0);
 		animator_wifi_button.setRepeatCount(0);
 		animator_wifi_button.setDuration(1000);
 		animator_wifi_button.setRepeatMode(ValueAnimator.INFINITE);
-		animator_wifi_button.setStartDelay(250);
+		animator_wifi_button.setStartDelay(750);
+		animator_wifi_button.addListener(new AnimatorListener() {
+			
+			@Override
+			public void onAnimationStart(Animator animation) {
+				WiFi.setAlpha(1f);
+				
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				
+			}
+			
+			@Override
+			public void onAnimationCancel(Animator animation) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		animator_wifi_button.start();
 		
 		WiFi.setOnClickListener(new View.OnClickListener() {
@@ -230,7 +301,48 @@ public class Main extends Activity {
 			}
 		});
 		
+		final Button settings = (Button)findViewById(R.id.settings);
+		settings.setAlpha(0f);
+		settings.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(),SettingsActivity.class);
+				startActivity(intent);
+			}
+		});
 		
+		ObjectAnimator animator_settings_button = ObjectAnimator.ofFloat(settings, View.TRANSLATION_Y, getWindowManager().getDefaultDisplay().getHeight(),0);
+		animator_settings_button.setRepeatCount(0);
+		animator_settings_button.setDuration(1000);
+		animator_settings_button.setRepeatMode(ValueAnimator.INFINITE);
+		animator_settings_button.setStartDelay(1000);
+		animator_settings_button.addListener(new AnimatorListener() {
+			
+			@Override
+			public void onAnimationStart(Animator animation) {
+				settings.setAlpha(1f);
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onAnimationCancel(Animator animation) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		animator_settings_button.start();
 	
 	}
 	
@@ -361,10 +473,10 @@ public class Main extends Activity {
 		protected String doInBackground(String... params) {
 			String value = null;
 			try {
-				URL url = new URL("https://api.spark.io/v1/devices/" + "53ff72066667574846452367" + "/"+params[0]+"/");
+				URL url = new URL("https://api.spark.io/v1/devices/" + DEVICE + "/"+params[0]+"/");
 				HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 				con.setRequestMethod("POST");
-				String urlParameters = "access_token=" + "708724b49e2162c67b0b4347cc209ee5058abdaa" + "&args=" + " "+(params[1]+" ");
+				String urlParameters = "access_token=" + ACCESS_TOKEN + "&args=" + " "+(params[1]+" ");
 				con.setDoOutput(true);
 				
 				DataOutputStream out = new DataOutputStream(con.getOutputStream());
@@ -410,7 +522,7 @@ public class Main extends Activity {
 		protected String doInBackground(String... params) {
 			String value = null;
 			try {
-				URL url = new URL("https://api.spark.io/v1/devices/" + "53ff72066667574846452367" + "/"+params[0]+"?access_token=" + "708724b49e2162c67b0b4347cc209ee5058abdaa");
+				URL url = new URL("https://api.spark.io/v1/devices/" + DEVICE + "/"+params[0]+"?access_token=" + ACCESS_TOKEN);
 				HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 				con.setRequestMethod("GET");
 				
