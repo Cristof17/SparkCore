@@ -3,6 +3,7 @@ package com.cric.own;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,18 +25,23 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.text.InputType;
@@ -69,7 +75,10 @@ public class Main extends Activity {
 	private String EMAIL ;
 	private String PASSWORD;
 	private String DEVICE;
+	private String PROFILE_PICTURE_URI ;
+	private String URI_EXTRA;
 	
+	private String option;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +88,15 @@ public class Main extends Activity {
 		ActionBar bar = getActionBar();
 		bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFF77")));
 		bar.setIcon(R.drawable.cristof2);
+		
+//		PROFILE_PICTURE_URI = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("profile_uri", null);
+//		Toast.makeText(getApplicationContext(), "Path is "+PROFILE_PICTURE_URI, Toast.LENGTH_SHORT).show();
+//		Log.d("TAG", "Profile picture uri is "+PROFILE_PICTURE_URI);
+//		if(PROFILE_PICTURE_URI == null){
+//			getActionBar().setIcon(R.drawable.ic_launcher);
+//		}else{
+//			getActionBar().setIcon(Drawable.createFromPath(PROFILE_PICTURE_URI));
+//		}
 		
 		EMAIL = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("username", null);
 		bar.setTitle(EMAIL);
@@ -211,6 +229,10 @@ public class Main extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 		if(resultCode == Activity.RESULT_OK){
 			
+			if(requestCode == 300){
+				getActionBar().setIcon(Drawable.createFromPath(data.getDataString()));
+			}
+			
 			if(requestCode == 200 ){
 				ArrayList text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 				if(text.get(0) == null)
@@ -331,13 +353,55 @@ public class Main extends Activity {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					Toast.makeText(getApplicationContext(), "Cerere trimisa", Toast.LENGTH_LONG).show(); 
-					new SparkCoreConnection().execute("credentials",SSID.getText().toString()+" "+Password.getText().toString());
 					
-					if(!wifiManager.isWifiEnabled()){
-						wifiManager.setWifiEnabled(true);
-						//close the tethering
-					}
+					final AlertDialog.Builder builder = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+					final String[] titles = {"Nu am parola" , "WEP","WPA","WPA2"};
+					builder.setTitle("Alege tipul de parola");
+					builder.setPositiveButton("Gata si cu asta", new OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Toast.makeText(getApplicationContext(), "Imediat adaug seriful meu ", Toast.LENGTH_LONG).show();
+                        	new SparkCoreConnection().execute("credentials",SSID.getText().toString()+" "+Password.getText().toString()+" "+option);
+							
+						}
+					});
+					
+					builder.setNegativeButton("Nu mai suport atatea optiuni", new OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Toast.makeText(getApplicationContext(), "Gata sefu'", Toast.LENGTH_SHORT).show();
+							if(wifiManager.isWifiEnabled())
+						    {
+						        wifiManager.setWifiEnabled(false);          
+						    }   
+						}
+					});
+					builder.setSingleChoiceItems(titles, -1, new OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							switch(which)
+		                    {
+		                        case 0:
+		                        	option = "";
+		                                 break;
+		                        case 1:	
+		                        	option = "WEP";
+		                                break;
+		                        case 2:
+		                        	option = "WPA";
+		                                break;
+		                        case 3:
+		                        	option = "WPA2";     
+		                                break;
+		                        
+		                    }
+							
+						}
+					});
+					builder.create().show();
 				}
 			});
 			builder.setNegativeButton("Renunta", new OnClickListener() {
@@ -355,7 +419,6 @@ public class Main extends Activity {
 			builder.setView(WiFiLayout);
 			
 			break;
-
 		default:
 			break;
 		}
@@ -459,6 +522,12 @@ public class Main extends Activity {
 				value = json_root.getString("return_value");
 				
 				reader.close();
+				
+				if(params[0].equals("credentials")){
+					if(!wifiManager.isWifiEnabled()){
+						wifiManager.setWifiEnabled(true);
+					}
+				}
 					
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
