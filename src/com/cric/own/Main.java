@@ -309,23 +309,23 @@ public class Main extends Activity {
 			createWifiAccessPoint(); //start the tethering process
 			final AlertDialog.Builder builder = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
 			AlertDialog.Builder info = new AlertDialog.Builder(Main.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK);
-			info.setTitle("Nu te asteptai la asta");
+			info.setTitle("Citeste daca stii sa citesti");
 			TextView informatii = new TextView(getApplicationContext());
-			informatii.setText("Pentru a muta Spark Core-ul in alta parte trebuie sa te asiguri ca ai Wi Fi acolo unde vrei sa il muti" +
-					".Daca nu ai Wi Fi atunci apasa butonul de mai" +
-					" jos si adauga credentialele noului punct de acces de internet");
+			informatii.setText("Pentru a muta Spark Core-ul in alta parte trebuie sa te asiguri ca ai Wi-Fi acolo unde vrei sa il muti" +
+					".Daca ai Wi-Fi atunci apasa \"Continuare\"" +
+					" si adauga credentialele noului Router sau Hotspot Wi-Fi");
 			informatii.setGravity(Gravity.CENTER);
 			informatii.setTextSize(20);
 			info.setView(informatii);
 			
-			info.setPositiveButton("Asa o sa fac", new OnClickListener() {
+			info.setPositiveButton("Continuare", new OnClickListener() {
 				
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					builder.create().show();
 				}
 			});
-			info.setNegativeButton("Nu vreau !!", new OnClickListener() {
+			info.setNegativeButton("Inapoi", new OnClickListener() {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -347,7 +347,7 @@ public class Main extends Activity {
 			Password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
 			
 			
-			builder.setTitle("Introduceti credentiale");
+			builder.setTitle("Introdu credentiale");
 			builder.setCancelable(true);
 			builder.setPositiveButton("Gata", new OnClickListener() {
 				
