@@ -15,4 +15,8 @@
         android:title="Adauga Wi-Fi"
         android:showAsAction="never"/>
    
+    <item android:id="@+id/profile_pic"
+        android:orderInCategory="0"
+        android:title="Imagine de profil"
+        android:showAsAction="never"/>
 </menu>

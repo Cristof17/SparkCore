@@ -3,7 +3,6 @@ package com.cric.own;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,24 +24,23 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.text.InputType;
 import android.util.Log;
@@ -89,14 +87,14 @@ public class Main extends Activity {
 		bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFF77")));
 		bar.setIcon(R.drawable.cristof2);
 		
-//		PROFILE_PICTURE_URI = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("profile_uri", null);
-//		Toast.makeText(getApplicationContext(), "Path is "+PROFILE_PICTURE_URI, Toast.LENGTH_SHORT).show();
-//		Log.d("TAG", "Profile picture uri is "+PROFILE_PICTURE_URI);
-//		if(PROFILE_PICTURE_URI == null){
-//			getActionBar().setIcon(R.drawable.ic_launcher);
-//		}else{
-//			getActionBar().setIcon(Drawable.createFromPath(PROFILE_PICTURE_URI));
-//		}
+		PROFILE_PICTURE_URI = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("profile_uri", null);
+		Log.d("TAG", "Profile picture uri is "+PROFILE_PICTURE_URI);
+		if(PROFILE_PICTURE_URI == null){
+			getActionBar().setIcon(R.drawable.ic_launcher);
+			Toast.makeText(getApplicationContext(), "Te rog alege o poza de profil", Toast.LENGTH_LONG).show();
+		}else{
+			getActionBar().setIcon(Drawable.createFromPath(PROFILE_PICTURE_URI));
+		}
 		
 		EMAIL = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("username", null);
 		bar.setTitle(EMAIL);
@@ -107,6 +105,7 @@ public class Main extends Activity {
 		if(EMAIL == null || PASSWORD == null || ACCESS_TOKEN == null || DEVICE == null){
 			Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
 			startActivity(intent);
+			onDestroy();
 		}
 			
 		
@@ -231,6 +230,7 @@ public class Main extends Activity {
 			
 			if(requestCode == 300){
 				getActionBar().setIcon(Drawable.createFromPath(data.getDataString()));
+				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("profile_uri", absolutePath(data.getDataString())).commit();
 			}
 			
 			if(requestCode == 200 ){
@@ -294,11 +294,29 @@ public class Main extends Activity {
 	}
 
 
+	public String absolutePath(String relative_path){
+		Cursor c = getContentResolver().query(
+			    Uri.parse(relative_path),null,null,null,null);
+			c.moveToNext();
+			String cale = c.getString(c.getColumnIndex(MediaStore.MediaColumns.DATA));
+			c.close();
+		
+		return cale;
+		
+	}
 
 
+	
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		
+		case R.id.profile_pic:
+			Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+			photoPickerIntent.setType("image/*");
+			startActivityForResult(photoPickerIntent, 300);
+			break;
 		case R.id.settings:
 			Intent intent = new Intent(getApplicationContext(),SettingsActivity.class);
 			startActivity(intent);

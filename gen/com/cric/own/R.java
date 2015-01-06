@@ -1699,7 +1699,8 @@ containing a value of this type.
         public static final int none=0x7f0a000f;
         public static final int normal=0x7f0a000b;
         public static final int password_edit_text=0x7f0a0048;
-        public static final int profile_option=0x7f0a004e;
+        public static final int profile_option=0x7f0a004f;
+        public static final int profile_pic=0x7f0a004e;
         public static final int progress_circular=0x7f0a0007;
         public static final int progress_horizontal=0x7f0a0008;
         public static final int radio=0x7f0a002d;
